@@ -1,7 +1,7 @@
 # torproxy #
 A transparent TOR proxying app for Gnome Desktop on Debian-based systems.
 
-Currently just a working prototype.
+Currently a functioning prototype. Requires installation of `libnotify-bin` to function properly.
 
 
 #### Installation: ####
@@ -31,3 +31,21 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+
+#### Acknowledgements ####
+
+Inspired by / heavily plagiarized from the following:
+
+- ParrotSec: https://github.com/ParrotSec/anonsurf
+- Und3rf10w: Unhttps://github.com/Und3rf10w/kali-anonsurf
+- Subgraph OS: https://github.com/subgraph/gnome-shell-extension-torstatus
+- Tor Project: https://wiki.torproject.org/noreply/TheOnionRouter/TransparentProxy
+
+
+#### TODO ####
+
+- Add a settings panel for customising things like tor UID.
+- Make translatable.
+- Wrap everything up in an installable deb package.
+- Find some collaborators, possibly you if you're reading this.
