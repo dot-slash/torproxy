@@ -1,0 +1,7 @@
+{
+  "description": "Transparent TOR proxy applet for Gnome Desktop",
+  "name": "Torproxy",
+  "extension-id": "torproxy",
+  "uuid": "torproxy@dot.slash",
+  "shell-version": ["3.2.2"]
+}

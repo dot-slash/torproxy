@@ -1,0 +1,11 @@
+# Connection settings
+VirtualAddrNetworkIPv4 10.192.0.0/10
+AutomapHostsOnResolve 1
+TransPort 9040
+SocksPort 9050
+DNSPort 5353
+
+# Socket safety hacks
+TestSocks 1
+SafeSocks 1
+WarnPlaintextPorts 23,109,110,143,80
