@@ -10,14 +10,14 @@ Go to the extensions folder:
 
 `$ cd ~/.local/share/gnome-shell/extensions/`
 
-Make a new folder called `torproxy@dot.slash`
+Make a new folder called `torproxy@dot.slash`:
 
 `$ mkdir torproxy@dot.slash`
 
 Copy the files into this new folder. Activate via the Gnome Tweak Tool under the Extensions tab.
 
 
-### Licence ###
+#### Licence ####
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
