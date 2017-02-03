@@ -52,6 +52,7 @@ Inspired by / heavily plagiarized from the following:
 - Improve error handling (if TOR UID is incorrect the error is quietly passed to sys logs, not notify)
 - Pull all the logic out of the shell script and into a GSE-style javascript controller
 - Refactor.
+- Do more to ensure the extension is distribution-agnostic
 - Add gnome shell startup checks to see if Torproxy shutdown scripts were run before last system shutdown (do cleanup)
 - Make fully translatable.
 - Wrap everything up in an installable deb package?
