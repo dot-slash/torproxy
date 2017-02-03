@@ -71,15 +71,15 @@ function start {
     service network-manager force-reload > /dev/null 2>&1
 
     service resolvconf stop 2>/dev/null || true
-    #service nscd stop 2>/dev/null || true
-    #service dnsmasq stop 2>/dev/null || true
-    #sleep 1
+    service nscd stop 2>/dev/null || true
+    service dnsmasq stop 2>/dev/null || true
+    sleep 1
     killall dnsmasq nscd 2>/dev/null || true
     sleep 2
     service resolvconf start 2>/dev/null || true
     sleep 1
     #service tor start
-    tor --defaults-torrc /usr/share/tor/tor-service-defaults-torrc -f /home/$CURR_USER/.local/share/gnome-shell/extensions/torproxy@dot.slash/torrc
+    /usr/bin/tor --defaults-torrc /usr/share/tor/tor-service-defaults-torrc -f /home/$CURR_USER/.local/share/gnome-shell/extensions/torproxy@dot.slash/torrc --RunAsDaemon 0
     sleep 1
 
     # Save IP table rules
