@@ -24,7 +24,7 @@ fi
 rm -r $INSTALL_DIR >&2
 mkdir -p $INSTALL_DIR
 
-for file in extension.js metadata.json prefs.js reset_prefs.sh install.sh torproxy.sh torrc README.md icons schemas; do
+for file in convenience.js extension.js metadata.json prefs.js reset_prefs.sh install.sh torproxy.sh torrc README.md icons schemas; do
     cp -r ./$file $INSTALL_DIR/
 done
 
