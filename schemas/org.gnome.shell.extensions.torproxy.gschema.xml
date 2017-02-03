@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="gnome-shell-extension-torproxy">
+  <schema path="/org/gnome/shell/extensions/torproxy/" id="org.gnome.shell.extensions.torproxy">
+    <key name="clear-caches" type="b">
+      <default>false</default>
+      <summary>Clear caches on startup/shutdown</summary>
+    </key>
+    <key name="tor-uid" type="s">
+      <default>"debian-tor"</default>
+      <summary>TOR User ID</summary>
+    </key>
+  </schema>
+</schemalist>

@@ -3,5 +3,7 @@
   "name": "Torproxy",
   "extension-id": "torproxy",
   "uuid": "torproxy@dot.slash",
+  "settings-schema": "org.gnome.shell.extensions.torproxy",
+  "gettext-domain": "gnome-shell-extension-torproxy",
   "shell-version": ["3.2.2"]
 }

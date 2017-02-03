@@ -1,4 +1,4 @@
-# torproxy #
+# torproxy 0.9 #
 A transparent TOR proxying app for Gnome Desktop on Debian-based systems. Based on ParrotSec's anonsurf,
 with a graphical frontend built as a Gnome Shell Extension.
 
@@ -13,17 +13,10 @@ of some of (currently) hardcoded variables, depending on you system settings and
 ![Enabled](http://i.imgsafe.org/b4fa528073.png)
 ![Notification](http://i.imgsafe.org/b4fae1a0d4.png)
 
+
 #### Installation: ####
 
-Go to the extensions folder:
-
-`$ cd ~/.local/share/gnome-shell/extensions/`
-
-Make a new folder called `torproxy@dot.slash`:
-
-`$ mkdir torproxy@dot.slash`
-
-Copy the files into this new folder. Activate via the Gnome Tweak Tool under the Extensions tab.
+Download and extract. `cd` into the folder and run `sudo ./install.sh`
 
 
 #### Licence ####
@@ -48,13 +41,18 @@ Inspired by / heavily plagiarized from the following:
 
 - ParrotSec: https://github.com/ParrotSec/anonsurf
 - Und3rf10w: https://github.com/Und3rf10w/kali-anonsurf
+- BrainfuckSec: https://github.com/BrainfuckSec/kalitorify
 - Subgraph OS: https://github.com/subgraph/gnome-shell-extension-torstatus
 - Tor Project: https://wiki.torproject.org/noreply/TheOnionRouter/TransparentProxy
 
 
 #### TODO ####
 
-- Add a settings panel for customising things like tor UID.
-- Make translatable.
-- Wrap everything up in an installable deb package.
-- Find some collaborators, possibly you if you're reading this.
+- Improve settings panel.
+- Improve error handling (if TOR UID is incorrect the error is quietly passed to sys logs, not notify)
+- Pull all the logic out of the shell script and into a GSE-style javascript controller
+- Refactor.
+- Add gnome shell startup checks to see if Torproxy shutdown scripts were run before last system shutdown (do cleanup)
+- Make fully translatable.
+- Wrap everything up in an installable deb package?
+- Find some collaborators. Possibly you, if you're reading this :)

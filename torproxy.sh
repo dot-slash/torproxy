@@ -1,14 +1,18 @@
 #!/bin/bash
 
-# Get DBUS address for notifications
-CURR_USER=$2
-PID=`pgrep --newest -u $CURR_USER gnome-shell`
-DBUS_SESSION_BUS_ADDRESS=`grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ | sed -e 's/DBUS_SESSION_BUS_ADDRESS=//'`
+# Get non-sudo user
+CURR_USER=`logname`
 
-export DBUS_SESSION_BUS_ADDRESS=$DBUS_SESSION_BUS_ADDRESS
+# Set up user DBUS address for notifications
+PID=`pgrep --newest -u $CURR_USER gnome-settings`
+DBUS=`grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ | tr -d '\0' | \
+sed -e 's/DBUS_SESSION_BUS_ADDRESS=//'`
+export DBUS_SESSION_BUS_ADDRESS=$DBUS
 
 # The UID Tor runs as. Check /usr/share/tor/tor-service-defaults-torrc "User" field for default.
-TOR_UID="debian-tor"
+TOR_UID=`gsettings get org.gnome.shell.extensions.torproxy tor-uid | cut -d "'" -f 2`
+
+CLEAR_CACHES=`gsettings get org.gnome.shell.extensions.torproxy clear-caches`
 
 # Tor's VirtualAddrNetworkIPv4
 VIRT_ADDR="10.192.0.0/10"
@@ -36,17 +40,16 @@ function notify {
 	fi
 }
 
-
 function init {
-	#notify "Killing dangerous processes and cleaning cache..."
+	#notify "Killing dangerous processes and clearing cache..."
 
 	echo -e "[Torproxy] Killing dangerous applications"
-	killall -q chrome dropbox iceweasel skype icedove thunderbird firefox chromium xchat transmission deluge pidgin pidgin.orig
+	killall -q chrome dropbox iceweasel skype icedove thunderbird firefox firefox-esr chromium xchat transmission deluge pidgin pidgin.orig
 
-	#if ! [ hash bleachbit 2>/dev/null ]; then
-	#    echo -e -n "[Torproxy] Cleaning some dangerous cache elements"
-	#    bleachbit -c adobe_reader.cache chromium.cache chromium.current_session chromium.history elinks.history emesene.cache epiphany.cache firefox.url_history flash.cache flash.cookies google_chrome.cache google_chrome.history links2.history opera.cache opera.search_history opera.url_history &> /dev/null
-    #fi
+	if $CLEAR_CACHES && hash bleachbit 2>/dev/null; then
+	    echo -e "[Torproxy] Clearsysing some dangerous cache elements"
+	    bleachbit -c adobe_reader.cache chromium.cache chromium.current_session chromium.history elinks.history emesene.cache epiphany.cache firefox.url_history flash.cache flash.cookies google_chrome.cache google_chrome.history links2.history opera.cache opera.search_history opera.url_history &> /dev/null
+    fi
 }
 
 function start {
@@ -54,31 +57,29 @@ function start {
 	disable_ufw
 
 	# Kill IPv6 services
-	echo -e "[Torproxy] Stopping IPv6 services..."
+	echo -e "[Torproxy] Stopping IPv6 services"
 	sed -i '/^.*\#Torproxy$/d' /etc/sysctl.conf
 	echo "net.ipv6.conf.all.disable_ipv6=1 #Torproxy" >> /etc/sysctl.conf
 	echo "net.ipv6.conf.default.disable_ipv6=1 #Torproxy" >> /etc/sysctl.conf
 	sysctl -p > /dev/null
 
-	echo -e "[Torproxy] Starting anonymous mode:"
-	
-	if [ ! -e /var/run/tor/tor.pid ]; then
-	    notify "Starting TOR daemon..."
+	echo -e "[Torproxy] Starting Torproxy..."
+    notify "Starting TOR daemon..."
 
-		echo -e "[Torproxy] Tor is not running. Starting it for you" >&2
-		#service network-manager force-reload > /dev/null 2>&1
-        service resolvconf stop 2>/dev/null || true
-        service nscd stop 2>/dev/null || true
-        service dnsmasq stop 2>/dev/null || true
-        sleep 1
-		killall dnsmasq nscd resolvconf 2>/dev/null || true
-		sleep 2
-		service resolvconf start
-		sleep 1
-		#service tor start
-		tor --defaults-torrc /usr/share/tor/tor-service-defaults-torrc -f /home/user/.local/share/gnome-shell/extensions/torproxy@anon.null/torrc --RunAsDaemon 0
-		sleep 1
-	fi
+    #echo -e "[Torproxy] Tor is not running. Starting it for you"
+    service network-manager force-reload > /dev/null 2>&1
+
+    service resolvconf stop 2>/dev/null || true
+    #service nscd stop 2>/dev/null || true
+    #service dnsmasq stop 2>/dev/null || true
+    #sleep 1
+    killall dnsmasq nscd 2>/dev/null || true
+    sleep 2
+    service resolvconf start 2>/dev/null || true
+    sleep 1
+    #service tor start
+    tor --defaults-torrc /usr/share/tor/tor-service-defaults-torrc -f /home/$CURR_USER/.local/share/gnome-shell/extensions/torproxy@dot.slash/torrc
+    sleep 1
 
     # Save IP table rules
 	if ! [ -f /etc/network/iptables.rules ]; then
@@ -143,7 +144,7 @@ function start {
     iptables -P FORWARD DROP
     iptables -P OUTPUT DROP
 
-	echo -e "[Torproxy] All traffic is now redirected through Tor"
+	echo -e "[Torproxy] All traffic is now redirected through TOR"
 
 	notify "Torproxy is up and running."
 }
@@ -171,7 +172,9 @@ function stop {
 		cp /etc/resolv.conf.backup /etc/resolv.conf
 	fi
 	
-	service tor stop
+	service tor stop >&2
+	sleep 1
+	killall tor >&2
 
 	# Reenable IPv6 services
 	echo -e "[Torproxy] Reenabling IPv6 services"
@@ -245,11 +248,9 @@ case "$1" in
 		status
 	;;
 	restart)
-	    #notify "Restarting Torproxy..."
 		stop
 		sleep 2
 		start
-		#notify "Torproxy is up and running."
 	;;
     *)
         exit 1

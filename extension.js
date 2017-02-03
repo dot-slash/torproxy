@@ -69,7 +69,6 @@ const TorproxyMenu = new Lang.Class({
     createMenu: function() {
         // Add menu items
         this.torproxySwitch = new PopupMenu.PopupSwitchMenuItem("Torproxy");
-        //this.torproxySwitch._switch.reactive = false;
         this.torproxySwitch.connect('toggled', Lang.bind(this, this.toggleSwitch));
         this.menu.addMenuItem(this.torproxySwitch);
 
@@ -121,23 +120,24 @@ const TorproxyMenu = new Lang.Class({
     },
 
     _tpStart: function() {
-        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'start', this.user ], 'on');
+
+        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'start'], 'on');
     },
 
     _tpStop: function() {
-        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'stop', this.user ], 'off');
+        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'stop'], 'off');
     },
 
     _tpChange: function() {
-        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'change', this.user ], null);
+        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'change'], null);
     },
 
     _tpRestart: function() {
-        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'restart', this.user ], null);
+        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'restart'], null);
     },
 
     _tpCheck: function() {
-        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'status', this.user ], null);
+        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'status'], null);
     },
 
 
@@ -159,7 +159,7 @@ const TorproxyMenu = new Lang.Class({
                     // Clean up when finished
                     spawn_close_pid(pid);
                 } else if (newState != null && exitStatus != "0") {
-                    //Reset switch class
+                    //Reset switch class if process failed
                     switch (newState) {
                         case 'on':
                             this.torproxySwitch.setToggleState(false);
