@@ -15,7 +15,7 @@ fi
 #Check for notify binary
 
 if [ ! -e /usr/bin/notify-send ];then
-    echo 'Please install notify binary first: "sudo apt-get install notify-bin"'
+    echo 'Please install notify binary first: "sudo apt-get install libnotify-bin"'
     exit 1
 fi
 

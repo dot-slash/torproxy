@@ -54,6 +54,10 @@ function init {
 
 function start {
 	check_root
+
+	echo -e "[Torproxy] Starting Torproxy..."
+    notify "Starting Torproxy..."
+
 	disable_ufw
 
 	# Kill IPv6 services
@@ -62,9 +66,6 @@ function start {
 	echo "net.ipv6.conf.all.disable_ipv6=1 #Torproxy" >> /etc/sysctl.conf
 	echo "net.ipv6.conf.default.disable_ipv6=1 #Torproxy" >> /etc/sysctl.conf
 	sysctl -p > /dev/null
-
-	echo -e "[Torproxy] Starting Torproxy..."
-    notify "Starting TOR daemon..."
 
     #echo -e "[Torproxy] Tor is not running. Starting it for you"
     service network-manager force-reload > /dev/null 2>&1
