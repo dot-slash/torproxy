@@ -74,16 +74,27 @@ function start {
     service nscd stop 2>/dev/null || true
     service dnsmasq stop 2>/dev/null || true
     sleep 1
-    killall dnsmasq nscd 2>/dev/null || true
-    sleep 2
+    killall dnsmasq nscd resolvconf 2>/dev/null || true
+    sleep 1
     service resolvconf start 2>/dev/null || true
-    sleep 1
-    #service tor start
-    /usr/bin/tor --defaults-torrc /usr/share/tor/tor-service-defaults-torrc -f /home/$CURR_USER/.local/share/gnome-shell/extensions/torproxy@dot.slash/torrc --RunAsDaemon 0
-    sleep 1
+
+    # Append config options and some socks safety hacks to torrc file
+    sed -i '/^.*\#Torproxy$/d' /etc/tor/torrc
+    echo "VirtualAddrNetworkIPv4 10.192.0.0/10 #Torproxy" >> /etc/tor/torrc
+    echo "AutomapHostsOnResolve 1 #Torproxy" >> /etc/tor/torrc
+    echo "TransPort 9040 #Torproxy" >> /etc/tor/torrc
+    echo "SocksPort 9050 #Torproxy" >> /etc/tor/torrc
+    echo "DNSPort 5353 #Torproxy" >> /etc/tor/torrc
+    echo "TestSocks 1 #Torproxy" >> /etc/tor/torrc
+    echo "SafeSocks 1 #Torproxy" >> /etc/tor/torrc
+    echo "WarnPlaintextPorts 23,109,110,143,80 #Torproxy" >> /etc/tor/torrc
+
+    #/usr/bin/tor --defaults-torrc /usr/share/tor/tor-service-defaults-torrc -f /home/$CURR_USER/.local/share/gnome-shell/extensions/torproxy@dot.slash/torrc --RunAsDaemon 1
+    service tor start
+    sleep 2
 
     # Save IP table rules
-	if ! [ -f /etc/network/iptables.rules ]; then
+	if [ ! -f /etc/network/iptables.rules ]; then
 		iptables-save > /etc/network/iptables.rules
 		echo -e "[Torproxy] Saved iptables rules"
 	fi
@@ -172,10 +183,13 @@ function stop {
 		rm /etc/resolv.conf
 		cp /etc/resolv.conf.backup /etc/resolv.conf
 	fi
-	
+
 	service tor stop >&2
 	sleep 1
-	killall tor >&2
+	#killall tor >&2
+
+	# Remove custom config options from torrc file
+	sed -i '/^.*\#Torproxy$/d' /etc/tor/torrc
 
 	# Reenable IPv6 services
 	echo -e "[Torproxy] Reenabling IPv6 services"

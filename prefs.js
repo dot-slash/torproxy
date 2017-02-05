@@ -43,9 +43,9 @@ const TorproxyPrefsWidget = new GObject.Class({
         let heading2 = '<b>' + _("TOR User ID") + '</b>';
         this.add(new Gtk.Label({ label: heading2, use_markup: true, halign: Gtk.Align.START, margin_top: 12 }));
 
-        tor_uid_label = new Gtk.Label({label: "Should be 'debian-tor' or 'tor', depending on distro", xalign: 0});
+        let tor_uid_label = new Gtk.Label({label: "Should be 'debian-tor' or 'tor', depending on distro", xalign: 0});
         this.add(tor_uid_label);
-        tor_uid = new Gtk.Entry();
+        let tor_uid = new Gtk.Entry();
         this._settings.bind('tor-uid', tor_uid, 'text', Gio.SettingsBindFlags.DEFAULT);
         this.add(tor_uid);
 

@@ -1,0 +1,6 @@
+Version 0.9.1
+
+-Added Gnome Shell Extensions settings panel
+-Changed how custom torrc options are loaded (still not great)
+-Reverted to using "service tor start" instead of calling tor binary
+-Added new launchable Torbrowser configured for transparent proxy mode!
