@@ -205,7 +205,8 @@ const TorproxyMenu = new Lang.Class({
         let prefs_backup = Gio.File.new_for_path(prefs_path+'.backup');
 
         if(prefs_backup.query_exists(null)) {
-            //Backup already exists... fine?
+            //A backup already exists... don't overwrite it.
+            return true;
         }
 
         if(prefs_file.query_exists(null)) {
@@ -221,10 +222,9 @@ const TorproxyMenu = new Lang.Class({
                 return true;
             } else {
                 //this._notify("Failed to back up Torbrowser preferences"); //Handed elsewhere
+                return false;
             }
         }
-
-        return false;
     },
 
     _tpRestorePrefs: function() {
