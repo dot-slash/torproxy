@@ -227,9 +227,10 @@ const TorproxyMenu = new Lang.Class({
                 return true;
             } else {
                 //this._notify("Failed to back up Torbrowser preferences"); //Handed elsewhere
-                return false;
             }
         }
+
+        return false;
     },
 
     _tpRestorePrefs: function() {

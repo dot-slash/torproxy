@@ -1,20 +1,21 @@
-# torproxy 0.9.1 #
-A transparent TOR proxying app for Gnome Desktop. Based on ParrotSec's anonsurf,
-with a graphical frontend built as a Gnome Shell Extension.
+# Torproxy 0.9.1 #
+A transparent TOR proxying applet for Gnome Desktop. Creates a system-wide proxy that redirects all traffic though TOR.
+Based on ParrotSec's anonsurf, with a graphical frontend built as a Gnome Shell Extension.
 
 Currently a functioning prototype. Feel free to download and play with it, but DO NOT rely on this for anonymity.
 It's very early alpha! Requires installation of the `libnotify-bin` package to function properly. Made for
-Debian-based systems, may require tweaking of some of (currently) hardcoded variables, depending
-on your system settings, distribution and tor installation.
+Debian-based systems but should work on others with Gnome. May require tweaking of some of (currently) hardcoded
+variables depending on your system settings, distribution and tor installation.
 
-**New addition:** launch a Torbrowser instance from the menu, configured to run in transparent proxy mode! (requires Torbrowser, obviously).
+**New addition:** launch a custom Torbrowser instance from the menu, configured to run in transparent proxy mode! (requires Torbrowser, obviously).
 
 
 #### Screenshots ####
 
-![Disabled](http://i.imgsafe.org/b4f93e911a.png)
-![Enabled](http://i.imgsafe.org/b4fa528073.png)
+![Disabled](https://i.imgsafe.org/8894fd2784.png)
+![Enabled](https://i.imgsafe.org/8895640fd3.png)
 ![Notification](http://i.imgsafe.org/b4fae1a0d4.png)
+![Torbrowser](https://i.imgsafe.org/8895ff0f4e.png)
 
 
 #### Installation: ####
