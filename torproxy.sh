@@ -3,7 +3,7 @@
 # Get non-sudo user
 CURR_USER=`logname`
 
-# Set up user DBUS address for notifications
+# Set up correct user DBUS address for notifications
 PID=`pgrep --newest -u $CURR_USER gnome-settings`
 DBUS=`grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ | tr -d '\0' | \
 sed -e 's/DBUS_SESSION_BUS_ADDRESS=//'`
@@ -36,7 +36,12 @@ function notify {
         time=2500
         path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
         icon=$path"/icons/icon180.png"
-        su "$CURR_USER" -c "notify-send Torproxy '$notice' -u low -t $time -i $icon"
+
+        if [ $USER != $CURR_USER ]; then
+            su "$CURR_USER" -c "notify-send Torproxy '$notice' -u low -t $time -i $icon"
+        else
+            notify-send Torproxy "$notice" -u low -t $time -i $icon
+        fi
 	fi
 }
 
@@ -47,7 +52,7 @@ function init {
 	killall -q chrome dropbox iceweasel skype icedove thunderbird firefox firefox-esr chromium xchat transmission deluge pidgin pidgin.orig
 
 	if $CLEAR_CACHES && hash bleachbit 2>/dev/null; then
-	    echo -e "[Torproxy] Clearsysing some dangerous cache elements"
+	    echo -e "[Torproxy] Clearing some dangerous cache elements"
 	    bleachbit -c adobe_reader.cache chromium.cache chromium.current_session chromium.history elinks.history emesene.cache epiphany.cache firefox.url_history flash.cache flash.cookies google_chrome.cache google_chrome.history links2.history opera.cache opera.search_history opera.url_history &> /dev/null
     fi
 }
@@ -67,9 +72,7 @@ function start {
 	echo "net.ipv6.conf.default.disable_ipv6=1 #Torproxy" >> /etc/sysctl.conf
 	sysctl -p > /dev/null
 
-    #echo -e "[Torproxy] Tor is not running. Starting it for you"
     service network-manager force-reload > /dev/null 2>&1
-
     service resolvconf stop 2>/dev/null || true
     service nscd stop 2>/dev/null || true
     service dnsmasq stop 2>/dev/null || true
@@ -84,14 +87,17 @@ function start {
     echo "AutomapHostsOnResolve 1 #Torproxy" >> /etc/tor/torrc
     echo "TransPort 9040 #Torproxy" >> /etc/tor/torrc
     echo "SocksPort 9050 #Torproxy" >> /etc/tor/torrc
+    #echo "ControlPort 9151 #Torproxy" >> /etc/tor/torrc
     echo "DNSPort 5353 #Torproxy" >> /etc/tor/torrc
     echo "TestSocks 1 #Torproxy" >> /etc/tor/torrc
     echo "SafeSocks 1 #Torproxy" >> /etc/tor/torrc
     echo "WarnPlaintextPorts 23,109,110,143,80 #Torproxy" >> /etc/tor/torrc
 
     #/usr/bin/tor --defaults-torrc /usr/share/tor/tor-service-defaults-torrc -f /home/$CURR_USER/.local/share/gnome-shell/extensions/torproxy@dot.slash/torrc --RunAsDaemon 1
+
+    # Start TOR service
     service tor start
-    sleep 2
+    #sleep 1
 
     # Save IP table rules
 	if [ ! -f /etc/network/iptables.rules ]; then
@@ -157,7 +163,6 @@ function start {
     iptables -P OUTPUT DROP
 
 	echo -e "[Torproxy] All traffic is now redirected through TOR"
-
 	notify "Torproxy is up and running."
 }
 
@@ -168,10 +173,12 @@ function stop {
     notify "Shutting down Torproxy..."
 	echo -e "[Torproxy] Stopping Torproxy..."
 
+    # Flush iptables
 	iptables -F
 	iptables -t nat -F
 	echo -e "[Torproxy] Flushed iptables rules"
-	
+
+	# Restore iptable rules
 	if [ -f /etc/network/iptables.rules ]; then
 		iptables-restore < /etc/network/iptables.rules
 		rm /etc/network/iptables.rules
@@ -184,6 +191,7 @@ function stop {
 		cp /etc/resolv.conf.backup /etc/resolv.conf
 	fi
 
+    # Stop TOR service
 	service tor stop >&2
 	sleep 1
 	#killall tor >&2
@@ -191,9 +199,9 @@ function stop {
 	# Remove custom config options from torrc file
 	sed -i '/^.*\#Torproxy$/d' /etc/tor/torrc
 
-	# Reenable IPv6 services
+	# Re-enable IPv6 services
 	echo -e "[Torproxy] Reenabling IPv6 services"
-	sed -i '/^.*\#Torproxy$/d' /etc/sysctl.conf #delete lines containing #Torproxy in /etc/sysctl.conf
+	sed -i '/^.*\#Torproxy$/d' /etc/sysctl.conf
 	sysctl -p
 
     # Reload services
@@ -210,13 +218,13 @@ function stop {
 function change {
 	service tor reload
 	sleep 1
-	echo -e "[Torproxy] Tor daemon reloaded and forced to change nodes"
+	echo -e "[Torproxy] TOR daemon reloaded and forced to change nodes"
 
-	notify "TOR service reloaded."
+	notify "TOR service reloaded with a fresh circuit"
 }
 
 function status {
-    status=`service tor status | grep Active: | sed -e 's/^.*\Active://'`
+    status=`/etc/init.d/tor status | grep Active: | sed -e 's/^.*\Active://'`
 	notify "Status: $status"
 }
 

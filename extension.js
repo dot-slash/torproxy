@@ -3,7 +3,6 @@ const Main = imports.ui.main;
 
 const GLib = imports.gi.GLib;
 const Gio = imports.gi.Gio;
-
 const Gdk = imports.gi.Gdk;
 
 const Shell = imports.gi.Shell;
@@ -52,10 +51,7 @@ const TorproxyMenu = new Lang.Class({
     addPanelButton: function() {
         // Create panel button
         this.button = new St.BoxLayout({ style_class: "main-button" });
-        this.icon = new St.Icon({
-            icon_name: 'tor-simple-symbolic',
-            style_class: 'system-status-icon'
-        });
+        this.icon = new St.Icon({icon_name: 'tor-simple-symbolic', style_class: 'system-status-icon'});
         this.icon.opacity = this.icon_inactive;
         this.button.add_actor(this.icon);
         this.actor.add_actor(this.button);
@@ -77,7 +73,7 @@ const TorproxyMenu = new Lang.Class({
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem);
 
-	    this.menuChange = new PopupMenu.PopupMenuItem("New TOR circuit");
+        this.menuChange = new PopupMenu.PopupMenuItem("New TOR circuit");
 	    this.menuChange.actor.reactive = false;
 	    this.menuChange.connect('activate', Lang.bind(this, this._tpChange));
 	    this.menu.addMenuItem(this.menuChange);
@@ -108,7 +104,6 @@ const TorproxyMenu = new Lang.Class({
 
     setState: function(newState) {
         //TODO: store the state in a preference, check on startup and clean up / restore system settings as needed
-
         switch (newState) {
             case 'on':
                 this.icon.opacity = this.icon_active;
@@ -137,7 +132,6 @@ const TorproxyMenu = new Lang.Class({
 
     _tpStop: function() {
         //TODO: double-check to see if Torbrowser prefs backup needs restoring?
-
         this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'stop'], 'off');
     },
 
@@ -150,14 +144,12 @@ const TorproxyMenu = new Lang.Class({
     },
 
     _tpCheck: function() {
-        this._spawn(['pkexec', this.filepath+'/torproxy.sh', 'status']);
+        this._spawn([this.filepath+'/torproxy.sh', 'status']);
     },
 
     _tpBrowser: function() {
-        // TODO: Check browser isn't open already, deal with it if so...?
-
-        // TODO: Check that torbrowser is actually installed... disable menu option if not.
-
+        //TODO: Check that torbrowser is actually installed... disable menu option if not.
+        //TODO: Check browser isn't open already, deal with it if so...?
         this._notify('Starting Torbrowser in transparent proxy mode...');
 
         // Back up Torbrowser preferences before launch (very important!)
@@ -179,6 +171,8 @@ const TorproxyMenu = new Lang.Class({
                 'TOR_SOCKS_HOST=10.192.0.1',
                 'TOR_SOCKS_PORT=9050',
                 'TOR_SKIP_CONTROLPORTTEST=1',
+                //'TOR_CONTROL_PORT=9151',
+                //'TOR_CONTROL_COOKIE_AUTH_FILE=/var/run/tor/control.authcookie',
                 'TOR_NO_DISPLAY_NETWORK_SETTINGS=1'
             ];
 
