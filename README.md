@@ -6,7 +6,7 @@ Currently a functioning prototype. Feel free to download and play with it, but D
 It's very early alpha! Requires installation of the `libnotify-bin` package to function properly. May require tweaking
 of some of (currently) hardcoded variables, depending on you system settings and tor installation.
 
-New addition: launch a Torbrowser instance from the menu, configured to run in transparent proxy mode (requires Torbrowser, obviously).
+**New addition:** launch a Torbrowser instance from the menu, configured to run in transparent proxy mode! (requires Torbrowser, obviously).
 
 
 #### Screenshots ####
