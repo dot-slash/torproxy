@@ -156,14 +156,14 @@ const TorproxyMenu = new Lang.Class({
         if(this._tpBackupPrefs()) {
             //TODO: set up control port for multiple TOR circuits
 
-            // Get basic Torbrowser
+            // Basic Torbrowser command
             let cmd = [
                 '/home/'+this.user+'/.local/share/torbrowser/tbb/x86_64/tor-browser_en-US/Browser/firefox',
                 '--class Tor Browser',
                 '-profile TorBrowser/Data/Browser/profile.default'
             ];
 
-            // Environment variables (skip Vidalia on launch, etc)
+            // Add environment variables (skip Vidalia on launch, etc)
             let base_env = GLib.get_environ();
             let cust_env = [
                 'TOR_SKIP_LAUNCH=1',
@@ -185,12 +185,17 @@ const TorproxyMenu = new Lang.Class({
                 null //func child setup function
             );
 
-            // Attach callback (called when process ends)
+            // Disable "Launch Torbrowser" button
+            this.menuBrowser.actor.reactive = false;
+
+            // Attatch callback (called when process ends)
             GLib.child_watch_add(GLib.PRIORITY_DEFAULT, child_pid, Lang.bind(this, function(pid, exitStatus) {
                 // Resore preferences backup when Torbrowser exit code received
                 this._notify("Shutting down transparent proxy Torbrowser...");
                 this._tpRestorePrefs();
                 GLib.spawn_close_pid(pid);
+                // Re-enable button
+                this.menuBrowser.actor.reactive = true;
             }));
 
         } else {
